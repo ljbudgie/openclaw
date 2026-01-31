@@ -3,7 +3,7 @@ import { WebSocketServer } from "ws";
 import { CANVAS_HOST_PATH } from "../canvas-host/a2ui.js";
 import { type CanvasHostHandler, createCanvasHostHandler } from "../canvas-host/server.js";
 import type { CliDeps } from "../cli/deps.js";
-import type { createSubsystemLogger } from "../logging/subsystem.js";
+import { createSubsystemLogger } from "../logging/subsystem.js";
 import type { RuntimeEnv } from "../runtime.js";
 import type { ResolvedGatewayAuth } from "./auth.js";
 import type { ChatAbortControllerEntry } from "./chat-abort.js";
@@ -104,6 +104,8 @@ export async function createGatewayRuntimeState(params: {
     log: params.logPlugins,
   });
 
+  const logStripe = createSubsystemLogger("stripe");
+
   const bindHosts = await resolveGatewayListenHosts(params.bindHost);
   const httpServers: HttpServer[] = [];
   const httpBindHosts: string[] = [];
@@ -119,6 +121,10 @@ export async function createGatewayRuntimeState(params: {
       handlePluginRequest,
       resolvedAuth: params.resolvedAuth,
       tlsOptions: params.gatewayTls?.enabled ? params.gatewayTls.tlsOptions : undefined,
+      stripeBasePath: "/api/stripe",
+      bindHost: params.bindHost,
+      port: params.port,
+      logStripe,
     });
     try {
       await listenGatewayHttpServer({

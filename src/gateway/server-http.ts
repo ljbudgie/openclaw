@@ -14,6 +14,7 @@ import type { createSubsystemLogger } from "../logging/subsystem.js";
 import { handleSlackHttpRequest } from "../slack/http/index.js";
 import { resolveAgentAvatar } from "../agents/identity-avatar.js";
 import { handleControlUiAvatarRequest, handleControlUiHttpRequest } from "./control-ui.js";
+import { handleStripeHttpRequest } from "./stripe-http.js";
 import {
   extractHookToken,
   getHookChannelError,
@@ -213,6 +214,10 @@ export function createGatewayHttpServer(opts: {
   handlePluginRequest?: HooksRequestHandler;
   resolvedAuth: import("./auth.js").ResolvedGatewayAuth;
   tlsOptions?: TlsOptions;
+  stripeBasePath?: string;
+  bindHost?: string;
+  port?: number;
+  logStripe?: SubsystemLogger;
 }): HttpServer {
   const {
     canvasHost,
@@ -258,6 +263,19 @@ export function createGatewayHttpServer(opts: {
       }
       if (handlePluginRequest && (await handlePluginRequest(req, res))) {
         return;
+      }
+      // Stripe payment processing
+      if (opts.stripeBasePath && opts.bindHost && opts.port && opts.logStripe) {
+        if (
+          await handleStripeHttpRequest(req, res, {
+            basePath: opts.stripeBasePath,
+            bindHost: opts.bindHost,
+            port: opts.port,
+            log: opts.logStripe,
+          })
+        ) {
+          return;
+        }
       }
       if (openResponsesEnabled) {
         if (

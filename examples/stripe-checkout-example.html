@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stripe Payment Integration - OpenClaw</title>
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f7f9fc;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #32325d;
+      margin-bottom: 30px;
+    }
+    .tab-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+    .tab-button {
+      flex: 1;
+      padding: 12px;
+      background: #f7f9fc;
+      border: 1px solid #e3e8ee;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .tab-button.active {
+      background: #635bff;
+      color: white;
+      border-color: #635bff;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    #payment-form {
+      margin-top: 20px;
+    }
+    #card-element {
+      background: white;
+      padding: 12px;
+      border: 1px solid #e3e8ee;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    #card-errors {
+      color: #fa755a;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    button {
+      background: #635bff;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #4f46e5;
+    }
+    button:disabled {
+      background: #e3e8ee;
+      cursor: not-allowed;
+    }
+    .price-select {
+      margin-bottom: 20px;
+    }
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #e3e8ee;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    .status {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 4px;
+      display: none;
+    }
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .spinner {
+      display: none;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #635bff;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      margin: 10px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🦞 OpenClaw Payments</h1>
+    
+    <div class="tab-buttons">
+      <button class="tab-button active" onclick="showTab('checkout')">Checkout</button>
+      <button class="tab-button" onclick="showTab('elements')">Card Elements</button>
+    </div>
+
+    <!-- Stripe Checkout Tab -->
+    <div id="checkout" class="tab-content active">
+      <h2>Stripe Checkout</h2>
+      <p>Create a hosted checkout session and redirect to Stripe.</p>
+      
+      <div class="price-select">
+        <label for="checkout-plan">Select Plan:</label>
+        <select id="checkout-plan">
+          <option value="payment">One-time Payment ($49.99)</option>
+          <option value="subscription">Monthly Subscription ($29.99/mo)</option>
+        </select>
+      </div>
+
+      <button onclick="createCheckoutSession()">
+        Go to Checkout
+      </button>
+    </div>
+
+    <!-- Stripe Elements Tab -->
+    <div id="elements" class="tab-content">
+      <h2>Stripe Elements</h2>
+      <p>Enter card details directly (embedded form).</p>
+      
+      <form id="payment-form">
+        <div id="card-element"></div>
+        <div id="card-errors"></div>
+        
+        <button id="submit-button">
+          Pay $49.99
+        </button>
+      </form>
+    </div>
+
+    <div id="spinner" class="spinner"></div>
+    <div id="status" class="status"></div>
+  </div>
+
+  <script>
+    // Configuration
+    const GATEWAY_URL = 'http://localhost:18789';
+    let stripe;
+    let elements;
+    let cardElement;
+
+    // Initialize Stripe
+    async function initStripe() {
+      try {
+        // Get publishable key from OpenClaw gateway
+        const response = await fetch(`${GATEWAY_URL}/api/stripe/config`);
+        const config = await response.json();
+        
+        stripe = Stripe(config.publishableKey);
+        
+        // Create Elements instance
+        elements = stripe.elements();
+        cardElement = elements.create('card', {
+          style: {
+            base: {
+              fontSize: '16px',
+              color: '#32325d',
+              '::placeholder': {
+                color: '#aab7c4'
+              }
+            }
+          }
+        });
+        
+        cardElement.mount('#card-element');
+        cardElement.on('change', handleCardChange);
+      } catch (error) {
+        showStatus('Error initializing Stripe: ' + error.message, 'error');
+      }
+    }
+
+    // Tab switching
+    function showTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      document.getElementById(tabName).classList.add('active');
+      event.target.classList.add('active');
+      
+      hideStatus();
+    }
+
+    // Stripe Checkout flow
+    async function createCheckoutSession() {
+      const plan = document.getElementById('checkout-plan').value;
+      showSpinner();
+      
+      try {
+        const response = await fetch(`${GATEWAY_URL}/api/stripe/checkout/sessions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            mode: plan === 'subscription' ? 'subscription' : 'payment',
+            lineItems: [
+              {
+                priceData: {
+                  currency: 'usd',
+                  productData: {
+                    name: plan === 'subscription' ? 'Pro Plan' : 'Premium Feature',
+                    description: plan === 'subscription' 
+                      ? 'Monthly subscription' 
+                      : 'One-time payment'
+                  },
+                  unitAmount: plan === 'subscription' ? 2999 : 4999,
+                  recurring: plan === 'subscription' ? { interval: 'month' } : undefined
+                },
+                quantity: 1
+              }
+            ],
+            successUrl: `${window.location.origin}/success.html?session_id={CHECKOUT_SESSION_ID}`,
+            cancelUrl: window.location.href,
+            allowPromotionCodes: true
+          })
+        });
+
+        const session = await response.json();
+        
+        // Redirect to Stripe Checkout
+        const result = await stripe.redirectToCheckout({
+          sessionId: session.id
+        });
+
+        if (result.error) {
+          showStatus(result.error.message, 'error');
+        }
+      } catch (error) {
+        showStatus('Error creating checkout session: ' + error.message, 'error');
+      } finally {
+        hideSpinner();
+      }
+    }
+
+    // Stripe Elements payment flow
+    async function handleCardChange(event) {
+      const displayError = document.getElementById('card-errors');
+      if (event.error) {
+        displayError.textContent = event.error.message;
+      } else {
+        displayError.textContent = '';
+      }
+    }
+
+    document.getElementById('payment-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      
+      const submitButton = document.getElementById('submit-button');
+      submitButton.disabled = true;
+      showSpinner();
+      hideStatus();
+
+      try {
+        // Create payment method
+        const {error, paymentMethod} = await stripe.createPaymentMethod({
+          type: 'card',
+          card: cardElement,
+        });
+
+        if (error) {
+          showStatus(error.message, 'error');
+          submitButton.disabled = false;
+          return;
+        }
+
+        // Create customer and attach payment method
+        const customerResponse = await fetch(`${GATEWAY_URL}/api/stripe/customers`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: 'customer@example.com',
+            name: 'Test Customer',
+            paymentMethod: paymentMethod.id
+          })
+        });
+
+        const customer = await customerResponse.json();
+
+        // Here you would create a payment intent or subscription
+        // For this example, we'll just show success
+        showStatus('Payment method saved successfully! Customer ID: ' + customer.id, 'success');
+        
+        // Clear the card element
+        cardElement.clear();
+
+      } catch (error) {
+        showStatus('Payment failed: ' + error.message, 'error');
+      } finally {
+        submitButton.disabled = false;
+        hideSpinner();
+      }
+    });
+
+    function showSpinner() {
+      document.getElementById('spinner').style.display = 'block';
+    }
+
+    function hideSpinner() {
+      document.getElementById('spinner').style.display = 'none';
+    }
+
+    function showStatus(message, type) {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.className = 'status ' + type;
+      status.style.display = 'block';
+    }
+
+    function hideStatus() {
+      document.getElementById('status').style.display = 'none';
+    }
+
+    // Check for success/cancel from URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+    if (sessionId) {
+      showStatus('Payment successful! Session ID: ' + sessionId, 'success');
+    }
+
+    // Initialize Stripe on page load
+    initStripe();
+  </script>
+</body>
+</html>

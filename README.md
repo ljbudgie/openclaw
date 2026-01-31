@@ -468,6 +468,15 @@ Use these when you’re past the onboarding flow and want the deeper reference.
 
 - [docs.openclaw.ai/gmail-pubsub](https://docs.openclaw.ai/automation/gmail-pubsub)
 
+## Examples
+
+The `examples/` directory contains sample projects demonstrating various integrations:
+
+- **[jewelry-shop](examples/jewelry-shop/)** - E-commerce site with Stripe payment integration
+  - Complete checkout flow with Stripe Elements
+  - Server-side payment processing example
+  - Security best practices for handling payments
+
 ## Molty
 
 OpenClaw was built for **Molty**, a space lobster AI assistant. 🦞

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Elegant Jewelry</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <h1>✨ Elegant Jewelry</h1>
+                </div>
+                <div class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="index.html#products">Products</a>
+                    <a href="cart.html">Cart (<span id="cart-count">0</span>)</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="checkout-section">
+            <div class="container">
+                <h2>Checkout</h2>
+                
+                <div class="checkout-grid">
+                    <div class="checkout-form">
+                        <h3>Billing Information</h3>
+                        <form id="checkout-form">
+                            <div class="form-group">
+                                <label for="full-name">Full Name *</label>
+                                <input type="text" id="full-name" name="full-name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Email Address *</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone">
+                            </div>
+
+                            <h3>Shipping Address</h3>
+
+                            <div class="form-group">
+                                <label for="address">Street Address *</label>
+                                <input type="text" id="address" name="address" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="city">City *</label>
+                                    <input type="text" id="city" name="city" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="state">State/Province *</label>
+                                    <input type="text" id="state" name="state" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="zip">ZIP/Postal Code *</label>
+                                    <input type="text" id="zip" name="zip" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="country">Country *</label>
+                                    <input type="text" id="country" name="country" value="United States" required>
+                                </div>
+                            </div>
+
+                            <h3>Payment Method</h3>
+                            
+                            <div class="payment-options">
+                                <p class="payment-note">Choose your preferred payment processor to complete your purchase:</p>
+                                
+                                <button type="button" class="payment-btn stripe-btn" id="stripe-checkout">
+                                    <svg viewBox="0 0 60 25" xmlns="http://www.w3.org/2000/svg" width="60" height="25">
+                                        <path fill="var(--stripe-color)" d="M59.64 14.28h-8.06c.19 1.93 1.6 2.55 3.2 2.55 1.64 0 2.96-.37 4.05-.95v3.32a8.33 8.33 0 0 1-4.56 1.1c-4.01 0-6.83-2.5-6.83-7.48 0-4.19 2.39-7.52 6.3-7.52 3.92 0 5.96 3.28 5.96 7.5 0 .4-.04 1.26-.06 1.48zm-5.92-5.62c-1.03 0-2.17.73-2.17 2.58h4.25c0-1.85-1.07-2.58-2.08-2.58zM40.95 20.3c-1.44 0-2.32-.6-2.9-1.04l-.02 4.63-4.12.87V5.57h3.76l.08 1.02a4.7 4.7 0 0 1 3.23-1.29c2.9 0 5.62 2.6 5.62 7.4 0 5.23-2.7 7.6-5.65 7.6zM40 8.95c-.95 0-1.54.34-1.97.81l.02 6.12c.4.44.98.78 1.95.78 1.52 0 2.54-1.65 2.54-3.87 0-2.15-1.04-3.84-2.54-3.84zM28.24 5.57h4.13v14.44h-4.13V5.57zm0-4.7L32.37 0v3.36l-4.13.88V.88zm-4.32 9.35v9.79H19.8V5.57h3.7l.12 1.22c1-1.77 3.07-1.41 3.62-1.22v3.79c-.52-.17-2.29-.43-3.32.86zm-8.55 4.72c0 2.43 2.6 1.68 3.12 1.46v3.36c-.55.3-1.54.54-2.89.54a4.15 4.15 0 0 1-4.27-4.24l.01-13.17 4.02-.86v3.54h3.14V9.1h-3.13v5.85zm-4.91.7c0 2.97-2.31 4.66-5.73 4.66a11.2 11.2 0 0 1-4.46-.93v-3.93c1.38.75 3.1 1.31 4.46 1.31.92 0 1.53-.24 1.53-1C6.26 13.77 0 14.51 0 9.95 0 7.04 2.28 5.3 5.62 5.3c1.36 0 2.72.2 4.09.75v3.88a9.23 9.23 0 0 0-4.1-1.06c-.86 0-1.44.25-1.44.93 0 1.85 6.29.97 6.29 5.88z" fill-rule="evenodd"/>
+                                    </svg>
+                                    Pay with Stripe
+                                </button>
+
+                                <button type="button" class="payment-btn paypal-btn" id="paypal-checkout">
+                                    <svg viewBox="0 0 100 32" xmlns="http://www.w3.org/2000/svg" width="100" height="32">
+                                        <path fill="#003087" d="M12 4.917L7.117 28h4.633l1.233-6.133h2.817c5.367 0 8.533-2.817 9.167-7.917.567-4.5-2.817-9.033-8.967-9.033H12zm3.267 4.9h1.283c2.817 0 4.617 1.133 4.267 3.683-.35 2.55-2.533 3.683-5.35 3.683h-1.283l1.083-7.366z"/>
+                                        <path fill="#009cde" d="M26.7 4.917L21.817 28h4.633l1.233-6.133h2.817c5.367 0 8.533-2.817 9.167-7.917.567-4.5-2.817-9.033-8.967-9.033H26.7zm3.267 4.9h1.283c2.817 0 4.617 1.133 4.267 3.683-.35 2.55-2.533 3.683-5.35 3.683h-1.283l1.083-7.366z"/>
+                                        <path fill="#003087" d="M42.483 13.917c-3.05 0-5.367 2.467-5.367 5.517 0 3.05 2.317 5.433 5.367 5.433s5.4-2.383 5.4-5.433c0-3.05-2.35-5.517-5.4-5.517zm0 7.533c-1.05 0-1.783-.867-1.783-2.017 0-1.15.733-2.1 1.783-2.1s1.8.95 1.8 2.1c0 1.15-.75 2.017-1.8 2.017z"/>
+                                        <path fill="#009cde" d="M55.117 13.917c-3.05 0-5.367 2.467-5.367 5.517 0 3.05 2.317 5.433 5.367 5.433s5.4-2.383 5.4-5.433c0-3.05-2.35-5.517-5.4-5.517zm0 7.533c-1.05 0-1.783-.867-1.783-2.017 0-1.15.733-2.1 1.783-2.1s1.8.95 1.8 2.1c0 1.15-.75 2.017-1.8 2.017z"/>
+                                        <path fill="#003087" d="M66.283 14.083l-.3 1.8-.117-.133c-.65-.967-1.9-1.283-3.133-1.283-3.317 0-6.217 3.067-6.65 6.55-.25 1.75.117 3.417 1 4.567.85 1.067 2.05 1.517 3.467 1.517 2.467 0 3.833-1.583 3.833-1.583l-.317 1.55h3.917l2.917-13.033-4.617.05zm-2.6 7.45c-1.283 0-2.133-1.033-2.133-2.617 0-2.533 1.333-4.267 3.233-4.267 1.267 0 2.133 1.033 2.133 2.567 0 2.583-1.283 4.317-3.233 4.317z"/>
+                                        <path fill="#009cde" d="M82.8 14.083l-4.583 13.033h-4.017l2.267-13.033H82.8zm-1.15-4.85L79.533.383h-4.867l2.1 8.85h4.883z"/>
+                                        <path fill="#009cde" d="M98.283 14.083l-2.583 13.033h-3.9l.317-1.467c-.683.95-1.9 1.7-3.567 1.7-1.4 0-2.55-.517-3.367-1.5-.8-1-1.15-2.45-.95-4.083.35-3.483 3.033-6.767 6.65-6.767 1.233 0 2.483.317 3.167 1.267l.117.15.283-1.333h4.833zm-7.15 7.467c1.283 0 2.15-1.05 2.15-2.617 0-1.533-.867-2.567-2.15-2.567-1.3 0-2.183 1.05-2.183 2.617 0 1.517.883 2.567 2.183 2.567z"/>
+                                    </svg>
+                                    Pay with PayPal
+                                </button>
+                            </div>
+
+                            <p class="form-disclaimer">
+                                * Required fields. By proceeding to checkout, you agree to our Terms of Service and Privacy Policy.
+                                Payment will be processed securely through your chosen payment provider.
+                            </p>
+                        </form>
+                    </div>
+
+                    <div class="order-summary">
+                        <h3>Order Summary</h3>
+                        <div id="checkout-items">
+                            <!-- Cart items will be loaded here -->
+                        </div>
+                        <div class="summary-totals">
+                            <div class="summary-row">
+                                <span>Subtotal:</span>
+                                <span id="checkout-subtotal">$0.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Shipping:</span>
+                                <span id="checkout-shipping">$0.00</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span>Total:</span>
+                                <span id="checkout-total">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Elegant Jewelry. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#privacy">Privacy Policy</a>
+                <a href="#terms">Terms of Service</a>
+                <a href="#contact">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/products.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/checkout.js"></script>
+</body>
+</html>

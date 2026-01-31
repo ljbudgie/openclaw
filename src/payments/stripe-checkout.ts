@@ -75,7 +75,7 @@ export async function createCheckoutSession(
       customer: params.customerId,
       metadata: params.metadata,
       allow_promotion_codes: params.allowPromotionCodes ?? false,
-      payment_method_types: params.paymentMethodTypes ?? ["card"],
+      payment_method_types: params.paymentMethodTypes as Stripe.Checkout.SessionCreateParams.PaymentMethodType[] | undefined ?? ["card"],
     };
 
     // Enable automatic tax calculation if available

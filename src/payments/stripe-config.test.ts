@@ -1,5 +1,6 @@
 import { describe, expect, it, beforeEach, vi } from "vitest";
 import { getStripeConfig, getStripeClient, resetStripeClient } from "./stripe-config.js";
+import * as configModule from "../config/config.js";
 
 // Mock loadConfig
 vi.mock("../config/config.js", () => ({
@@ -22,8 +23,8 @@ describe("stripe-config", () => {
   });
 
   it("returns null when stripe is not enabled", () => {
-    const { loadConfig } = vi.mocked(await import("../config/config.js"));
-    loadConfig.mockReturnValueOnce({
+    const loadConfigMock = vi.mocked(configModule.loadConfig);
+    loadConfigMock.mockReturnValueOnce({
       env: {
         stripe: {
           enabled: false,
@@ -36,8 +37,8 @@ describe("stripe-config", () => {
   });
 
   it("returns null when stripe config is missing", () => {
-    const { loadConfig } = vi.mocked(await import("../config/config.js"));
-    loadConfig.mockReturnValueOnce({
+    const loadConfigMock = vi.mocked(configModule.loadConfig);
+    loadConfigMock.mockReturnValueOnce({
       env: {},
     } as never);
 
@@ -46,8 +47,8 @@ describe("stripe-config", () => {
   });
 
   it("throws error when secret key is missing but enabled", () => {
-    const { loadConfig } = vi.mocked(await import("../config/config.js"));
-    loadConfig.mockReturnValueOnce({
+    const loadConfigMock = vi.mocked(configModule.loadConfig);
+    loadConfigMock.mockReturnValueOnce({
       env: {
         stripe: {
           enabled: true,
@@ -72,8 +73,8 @@ describe("stripe-config", () => {
   });
 
   it("uses default API version when not specified", () => {
-    const { loadConfig } = vi.mocked(await import("../config/config.js"));
-    loadConfig.mockReturnValueOnce({
+    const loadConfigMock = vi.mocked(configModule.loadConfig);
+    loadConfigMock.mockReturnValueOnce({
       env: {
         stripe: {
           enabled: true,
@@ -87,8 +88,8 @@ describe("stripe-config", () => {
   });
 
   it("returns null for client when stripe is not configured", () => {
-    const { loadConfig } = vi.mocked(await import("../config/config.js"));
-    loadConfig.mockReturnValueOnce({
+    const loadConfigMock = vi.mocked(configModule.loadConfig);
+    loadConfigMock.mockReturnValueOnce({
       env: {},
     } as never);
 

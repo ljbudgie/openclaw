@@ -18,20 +18,32 @@ export function getStripeConfig(): StripeConfig | null {
   const config = loadConfig();
   const stripeEnv = config.env?.stripe;
 
-  if (!stripeEnv?.enabled) {
+  // Check if stripeEnv is an object with the expected shape
+  if (
+    !stripeEnv ||
+    typeof stripeEnv === "string" ||
+    typeof stripeEnv !== "object" ||
+    !("enabled" in stripeEnv)
+  ) {
     return null;
   }
 
-  if (!stripeEnv.secretKey) {
+  const stripeConfig = stripeEnv as { enabled?: boolean; secretKey?: string; publishableKey?: string; webhookSecret?: string; apiVersion?: string };
+
+  if (!stripeConfig.enabled) {
+    return null;
+  }
+
+  if (!stripeConfig.secretKey) {
     throw new Error("Stripe secret key is required when Stripe is enabled");
   }
 
   return {
-    enabled: stripeEnv.enabled,
-    secretKey: stripeEnv.secretKey,
-    publishableKey: stripeEnv.publishableKey ?? "",
-    webhookSecret: stripeEnv.webhookSecret ?? "",
-    apiVersion: stripeEnv.apiVersion ?? "2024-12-18.acacia",
+    enabled: stripeConfig.enabled,
+    secretKey: stripeConfig.secretKey,
+    publishableKey: stripeConfig.publishableKey ?? "",
+    webhookSecret: stripeConfig.webhookSecret ?? "",
+    apiVersion: stripeConfig.apiVersion ?? "2024-12-18.acacia",
   };
 }
 

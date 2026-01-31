@@ -175,20 +175,22 @@ registerWebhookHandler("customer.subscription.trial_will_end", async (event, log
 
 registerWebhookHandler("invoice.payment_succeeded", async (event, log) => {
   const invoice = event.data.object as Stripe.Invoice;
+  const subscriptionId = (invoice as { subscription?: string | Stripe.Subscription }).subscription;
   log?.info("Invoice payment succeeded", {
     invoiceId: invoice.id,
     customerId: invoice.customer,
-    subscriptionId: invoice.subscription,
+    subscriptionId: typeof subscriptionId === "string" ? subscriptionId : subscriptionId?.id,
     amountPaid: invoice.amount_paid,
   });
 });
 
 registerWebhookHandler("invoice.payment_failed", async (event, log) => {
   const invoice = event.data.object as Stripe.Invoice;
+  const subscriptionId = (invoice as { subscription?: string | Stripe.Subscription }).subscription;
   log?.error("Invoice payment failed", {
     invoiceId: invoice.id,
     customerId: invoice.customer,
-    subscriptionId: invoice.subscription,
+    subscriptionId: typeof subscriptionId === "string" ? subscriptionId : subscriptionId?.id,
     attemptCount: invoice.attempt_count,
   });
 });

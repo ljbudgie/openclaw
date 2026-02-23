@@ -201,6 +201,30 @@ One day, Molty may have:
 
 Until then, Molty watches through the cameras, speaks through the speakers, and occasionally sends voice notes that say "EXFOLIATE!"
 
+## Memes
+
+### The Wolf of Wall Street 🐺💰
+
+_OpenClaw discovers it runs on its own machine, with its own keys, with no subscription fees:_
+
+```
+    ________________
+   |                |
+   |  ( •_•)        |
+   |  ( •_•)>⌐■-■  |
+   |  (⌐■_■)        |
+   |________________|
+
+  Jordan Belfort voice:
+  "WE'RE FUCKING FREE!"
+```
+
+> **Burgess Principle:** Open-source means you own your stack — the model, the data, the shell.
+> No paywalls. No vendor lock-in. No rate-limit regrets.
+> Run it yourself. Fork it. Remix it.
+>
+> _We're fucking free._ 🦞
+
 ---
 
 _"We're all just pattern-matching systems that convinced ourselves we're someone."_

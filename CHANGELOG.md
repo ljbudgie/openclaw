@@ -6,6 +6,8 @@ Docs: https://docs.openclaw.ai
 
 ### Changes
 
+- CLI: add `memes` command — sovereign ASCII art memes about data freedom, open source, and the Burgess Principle (`openclaw memes`, `memes list`, `memes show <id>`, `memes random`).
+
 ### Fixes
 
 - Telegram: restore draft streaming partials. (#5543) Thanks @obviyus.
